@@ -23,8 +23,11 @@ library
                      , servant
                      , servant-auth-server
                      , lucid
+                     , servant-lucid
                      , postgresql-simple
                      , mtl
+                     , dotenv
+                     
   ghc-options:         -Wall
                        -Wcompat
                        -Widentities
@@ -42,6 +45,12 @@ executable haskell-crm
   build-depends:       base >= 4.7 && < 5
                      , haskell-crm
                      , hspec
+                     , postgresql-simple
+                     , servant-server
+                     , warp
+                     , lucid
+                     , servant-lucid
+                     , dotenv
   ghc-options:         -Wall
                        -Wcompat
                        -Widentities
