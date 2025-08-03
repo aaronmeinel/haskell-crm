@@ -10,7 +10,7 @@ import App.ListConstituents (listConstituents)
 import App.AddConstituent (addConstituentAndList)
 import Domain.Constituent (Constituent(..))
 import qualified Domain.ConstituentRepo as Repo
-import Database.PostgreSQL.Simple (connectPostgreSQL, Connection)
+
 import Servant
 import Servant.HTML.Lucid
 import Network.Wai.Handler.Warp (run)
@@ -19,28 +19,30 @@ import Control.Monad.IO.Class (liftIO)
 import Data.String (fromString)
 import qualified Configuration.Dotenv as Dotenv
 
+
+import Database.Persist.Postgresql (withPostgresqlConn, runMigration, runSqlConn)
+import Control.Monad.Logger (runNoLoggingT)
+import Control.Monad.Trans.Resource (runResourceT)
+import App.ConstituentRepoPostgres (migrateAll)
+
+
+
 -- API definition
 type CRMApi = "constituents" :> Get '[HTML] (Html ())
            :<|> "add" :> QueryParam' '[Required] "name" String
                         :> QueryParam' '[Required] "email" String
                         :> Post '[HTML] (Html ())
 
-crmServer :: Connection -> Server CRMApi
-crmServer conn = listHandler :<|> addHandler
+crmServer :: Server CRMApi
+crmServer = listHandler :<|> addHandler
   where
     listHandler = do
-      cs <- liftIO $ listConstituentsIO conn
+      cs <- liftIO Repo.listConstituents
       pure $ renderHtml cs
     addHandler name email = do
-      _ <- liftIO $ addConstituentAndListIO conn (Constituent name email)
-      cs <- liftIO $ listConstituentsIO conn
+      _ <- liftIO $ Repo.addConstituent (Constituent name email)
+      cs <- liftIO Repo.listConstituents
       pure $ renderHtml cs
-
-listConstituentsIO :: Connection -> IO [Constituent]
-listConstituentsIO _ = Repo.listConstituents
-
-addConstituentAndListIO :: Connection -> Constituent -> IO [Constituent]
-addConstituentAndListIO _ c = Repo.addConstituent c >> Repo.listConstituents
 
 renderHtml :: [Constituent] -> Html ()
 renderHtml cs = html_ $ body_ $ do
@@ -51,11 +53,14 @@ crmApi :: Proxy CRMApi
 crmApi = Proxy
 
 main :: IO ()
+
 main = do
   Dotenv.loadFile Dotenv.defaultConfig
   connStr <- getDbConnectInfo
   putStrLn $ "Postgres connection string: " ++ connStr
-  conn <- connectPostgreSQL (fromString connStr)
+  -- Run migrations at startup
+  runResourceT $ runNoLoggingT $ withPostgresqlConn (fromString connStr) $ \backend ->
+    runSqlConn (runMigration migrateAll) backend
   putStrLn "Running on http://localhost:8080"
-  run 8080 (serve crmApi (crmServer conn))
+  run 8080 (serve crmApi crmServer)
 

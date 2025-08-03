@@ -24,9 +24,14 @@ library
                      , servant-auth-server
                      , lucid
                      , servant-lucid
-                     , postgresql-simple
+                     , persistent
+                     , persistent-postgresql
+                     , persistent-template
                      , mtl
                      , dotenv
+                     , monad-logger
+                     , bytestring
+                    , resourcet
                      
   ghc-options:         -Wall
                        -Wcompat
@@ -45,12 +50,17 @@ executable haskell-crm
   build-depends:       base >= 4.7 && < 5
                      , haskell-crm
                      , hspec
-                     , postgresql-simple
+                     , persistent
+                     , persistent-postgresql
+                     , persistent-template
                      , servant-server
                      , warp
                      , lucid
                      , servant-lucid
                      , dotenv
+                     , monad-logger
+                     , bytestring
+                    , resourcet
   ghc-options:         -Wall
                        -Wcompat
                        -Widentities
@@ -70,4 +80,5 @@ test-suite haskell-crm-test
                      , hspec
                      , haskell-crm
                      , mtl
+                    , resourcet
   ghc-options:         -Wall

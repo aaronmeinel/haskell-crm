@@ -1,29 +1,53 @@
+{-# LANGUAGE GADTs #-}
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE DerivingStrategies #-}
+{-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 module App.ConstituentRepoPostgres where
 
+import Database.Persist
+import Database.Persist.Postgresql
+import Database.Persist.TH
+import Control.Monad.IO.Class (liftIO)
+import Control.Monad.Logger (runNoLoggingT)
 import Domain.Constituent (Constituent(..))
 import Domain.ConstituentRepo
-import Database.PostgreSQL.Simple
-import Database.PostgreSQL.Simple.FromRow
-import Database.PostgreSQL.Simple.ToRow
-import Database.PostgreSQL.Simple.ToField (toField)
-import Data.String (fromString)
+import App.Env (getDbConnectInfo)
+import qualified Data.ByteString.Char8 as BS
+import Control.Monad.Trans.Resource (runResourceT)
 
-instance FromRow Constituent where
-  fromRow = Constituent <$> field <*> field
+share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
+ConstituentEntity
+    name String
+    email String
+    deriving Show Eq
+|]
 
-instance ToRow Constituent where
-  toRow (Constituent n e) = [toField n, toField e]
+toDomain :: ConstituentEntity -> Constituent
+toDomain (ConstituentEntity name email) = Constituent name email
+
+fromDomain :: Constituent -> ConstituentEntity
+fromDomain (Constituent name email) = ConstituentEntity name email
+
+
+runDb :: SqlPersistM a -> IO a
+runDb action = do
+  connStr <- getDbConnectInfo
+  runResourceT $
+    runNoLoggingT $
+      withPostgresqlConn (BS.pack connStr) $ \backend ->
+        runSqlConn action backend
 
 instance MonadConstituentRepo IO where
-  addConstituent c = do
-    conn <- connectPostgreSQL (fromString "dbname=yourdb user=youruser password=yourpass")
-    _ <- execute conn (fromString "INSERT INTO constituents (name, email) VALUES (?, ?)") (name c, email c)
-    pure ()
-
-  listConstituents = do
-    conn <- connectPostgreSQL (fromString "dbname=yourdb user=youruser password=yourpass")
-    query_ conn (fromString "SELECT name, email FROM constituents")
+  addConstituent c = runDb $ insert_ (fromDomain c)
+  listConstituents = runDb $ do
+    ents <- selectList [] []
+    pure $ map (toDomain . entityVal) ents
