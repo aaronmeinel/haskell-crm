@@ -1,9 +1,10 @@
-module App.AddConstituent (addConstituent) where
+module App.AddConstituent (addConstituentAndList) where
 
 import Domain.Constituent (Constituent(..))
-import Domain.ConstituentRepoF
-import App.ConstituentRepoInterpreter (runInMemory)
+import Domain.ConstituentRepo
 
--- | Use the free monad to add a constituent and return the new list (in-memory)
-addConstituent :: Constituent -> [Constituent] -> [Constituent]
-addConstituent c store = runInMemory store (addConstituentF c)
+-- | Add a constituent and return the updated list using the repository typeclass
+addConstituentAndList :: MonadConstituentRepo m => Constituent -> m [Constituent]
+addConstituentAndList c = do
+  addConstituent c
+  listConstituents

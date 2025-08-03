@@ -24,6 +24,7 @@ library
                      , servant-auth-server
                      , lucid
                      , postgresql-simple
+                     , mtl
   ghc-options:         -Wall
                        -Wcompat
                        -Widentities
@@ -59,4 +60,5 @@ test-suite haskell-crm-test
   build-depends:       base >= 4.7 && < 5
                      , hspec
                      , haskell-crm
+                     , mtl
   ghc-options:         -Wall

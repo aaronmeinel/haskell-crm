@@ -1,7 +1,9 @@
+
 module App.ListConstituents (listConstituents) where
 
 import Domain.Constituent (Constituent(..))
+import qualified Domain.ConstituentRepo as Repo
 
--- | Use the free monad to list constituents (in-memory)
-listConstituents :: [Constituent] -> [Constituent]
-listConstituents store = runInMemory store listConstituentsF
+-- | List all constituents using the repository typeclass
+listConstituents :: Repo.MonadConstituentRepo m => m [Constituent]
+listConstituents = Repo.listConstituents
