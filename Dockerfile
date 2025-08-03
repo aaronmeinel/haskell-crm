@@ -1,5 +1,5 @@
 # Use official Haskell image with stack
-FROM haskell:9.6.5
+FROM haskell:9.12.0
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y libpq-dev
