@@ -1,7 +1,9 @@
 module App.AddConstituent (addConstituent) where
 
 import Domain.Constituent (Constituent(..))
+import Domain.ConstituentRepoF
+import App.ConstituentRepoInterpreter (runInMemory)
 
--- | For now, just returns a list with the new constituent (stub for future DB integration)
-addConstituent :: Constituent -> IO [Constituent]
-addConstituent c = pure [c]
+-- | Use the free monad to add a constituent and return the new list (in-memory)
+addConstituent :: Constituent -> [Constituent] -> [Constituent]
+addConstituent c store = runInMemory store (addConstituentF c)
