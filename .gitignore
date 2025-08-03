@@ -1,0 +1,46 @@
+# Haskell build and Stack files
+.stack-work/
+/dist/
+/.dist-newstyle/
+/.cabal-sandbox/
+cabal.sandbox.config
+
+# Cabal and Stack local config
+cabal.project.local
+cabal.project.local~
+stack.yaml.lock
+
+# GHC and Haskell IDE files
+*.hi
+*.o
+*.dyn_o
+*.dyn_hi
+*.prof
+*.aux
+*.hp
+*.eventlog
+*.tix
+*.haddock
+
+# Editor/IDE files
+/.vscode/
+/.idea/
+*.swp
+*~
+.DS_Store
+
+# Misc
+/.ghc.environment.*
+/.envrc
+/.direnv/
+/.tags
+/.hie/
+/.hie-bios
+
+# Executables
+/haskell-crm
+*.exe
+*.out
+*.so
+*.dll
+*.dylib
