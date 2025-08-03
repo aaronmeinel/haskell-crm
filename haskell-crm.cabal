@@ -31,7 +31,10 @@ library
                      , dotenv
                      , monad-logger
                      , bytestring
-                    , resourcet
+                     , resourcet
+                     , aeson
+                     , text
+                     , http-api-data
                      
   ghc-options:         -Wall
                        -Wcompat
@@ -60,7 +63,10 @@ executable haskell-crm
                      , dotenv
                      , monad-logger
                      , bytestring
-                    , resourcet
+                     , resourcet
+                     , aeson
+                     , text
+                     , http-api-data
   ghc-options:         -Wall
                        -Wcompat
                        -Widentities
@@ -80,5 +86,8 @@ test-suite haskell-crm-test
                      , hspec
                      , haskell-crm
                      , mtl
-                    , resourcet
+                     , resourcet
+                     , aeson
+                     , text
+                     , http-api-data
   ghc-options:         -Wall
