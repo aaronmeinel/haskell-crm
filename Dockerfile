@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y libpq-dev
 WORKDIR /app
 
 # Copy stack files and install dependencies first (for better caching)
-COPY stack.yaml package.yaml haskell-crm.cabal /app/
+COPY stack.yaml  haskell-crm.cabal /app/
 RUN stack setup && stack build --only-dependencies
 
 # Copy the rest of the source
