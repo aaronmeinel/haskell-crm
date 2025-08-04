@@ -44,3 +44,4 @@ stack.yaml.lock
 *.so
 *.dll
 *.dylib
+.env
