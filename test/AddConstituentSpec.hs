@@ -9,7 +9,7 @@ import Control.Monad.State
 
 spec :: Spec
 spec = describe "addConstituent" $ do
-  it "adds a constituent to the list (in-memory, MTL)" $ do
+  it "adds a constituent to the list (in-memory, MTL, typeclass)" $ do
     let newC = Constituent "Charlie" "charlie@example.com"
         cs = evalState (addConstituentAndList newC) ([] :: [Constituent])
     cs `shouldContain` [newC]

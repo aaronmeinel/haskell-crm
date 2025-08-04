@@ -60,11 +60,10 @@ crmServer = rootHandler :<|> listHandler :<|> addHandler
   where
     rootHandler = listHandler
     listHandler = do
-      cs <- liftIO Repo.listConstituents
+      cs <- liftIO listConstituents
       pure $ renderHtml cs
     addHandler (AddForm name email) = do
-      _ <- liftIO $ Repo.addConstituent (Constituent name email)
-      cs <- liftIO Repo.listConstituents
+      cs <- liftIO $ addConstituentAndList (Constituent name email)
       pure $ renderHtml cs
 
 
