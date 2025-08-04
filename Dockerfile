@@ -9,7 +9,7 @@ WORKDIR /app
 
 # Copy stack files and install dependencies first (for better caching)
 COPY stack.yaml  haskell-crm.cabal /app/
-RUN stack setup && stack build 
+#RUN stack setup && stack build 
 
 # Copy the rest of the source
 COPY . /app
