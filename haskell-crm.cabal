@@ -35,8 +35,10 @@ library
                      , bytestring
                      , resourcet
                      , aeson
+                     , uuid
                      , text
                      , http-api-data
+                     , uuid
                      
   ghc-options:         -Wall
                        -Wcompat
@@ -71,6 +73,7 @@ executable haskell-crm
                      , aeson
                      , text
                      , http-api-data
+                     , uuid
   ghc-options:         -Wall
                        -Wcompat
                        -Widentities

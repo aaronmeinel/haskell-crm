@@ -63,7 +63,7 @@ crmServer = rootHandler :<|> listHandler :<|> addHandler
       cs <- liftIO listConstituents
       pure $ renderHtml cs
     addHandler (AddForm name email) = do
-      cs <- liftIO $ addConstituentAndList (Constituent name email)
+      cs <- liftIO $ addConstituentAndList name email
       pure $ renderHtml cs
 
 
