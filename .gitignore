@@ -45,3 +45,6 @@ stack.yaml.lock
 *.dll
 *.dylib
 .env
+
+# Cabal stuff
+dist-newstyle/*
